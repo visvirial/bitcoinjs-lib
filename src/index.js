@@ -26,5 +26,3 @@ var transaction_1 = require("./transaction");
 exports.Transaction = transaction_1.Transaction;
 var transaction_builder_1 = require("./transaction_builder");
 exports.TransactionBuilder = transaction_builder_1.TransactionBuilder;
-var bip32_1 = require("bip32");
-exports.BIP32Interface = bip32_1.BIP32Interface;
