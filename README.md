@@ -85,6 +85,14 @@ The below examples are implemented as integration tests, they should be very eas
 Otherwise, pull requests are appreciated.
 Some examples interact (via HTTPS) with a 3rd Party Blockchain Provider (3PBP).
 
+### Warning: Currently the tests use TransactionBuilder, which will be removed in the future (v6.x.x or higher)
+We will move towards replacing all instances of TransactionBuilder in the tests with the new Psbt.
+
+Currently we have a few examples on how to use the newer Psbt class at the following link:
+- [Psbt examples](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/transactions-psbt.js)
+
+The rest of the examples are below (using TransactionBuilder for Transaction creation)
+
 - [Generate a random address](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/addresses.js)
 - [Import an address via WIF](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/addresses.js)
 - [Generate a 2-of-3 P2SH multisig address](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/addresses.js)
@@ -116,6 +124,11 @@ Some examples interact (via HTTPS) with a 3rd Party Blockchain Provider (3PBP).
 - [Create (and broadcast via 3PBP) a Transaction where Alice can redeem the output after the expiry (in the future)](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/cltv.js)
 - [Create (and broadcast via 3PBP) a Transaction where Alice and Bob can redeem the output at any time](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/cltv.js)
 - [Create (but fail to broadcast via 3PBP) a Transaction where Alice attempts to redeem before the expiry](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/cltv.js)
+- [Create (and broadcast via 3PBP) a Transaction where Alice can redeem the output after the expiry (in the future) (simple CHECKSEQUENCEVERIFY)](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/csv.js)
+- [Create (but fail to broadcast via 3PBP) a Transaction where Alice attempts to redeem before the expiry (simple CHECKSEQUENCEVERIFY)](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/csv.js)
+- [Create (and broadcast via 3PBP) a Transaction where Bob and Charles can send (complex CHECKSEQUENCEVERIFY)](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/csv.js)
+- [Create (and broadcast via 3PBP) a Transaction where Alice (mediator) and Bob can send after 2 blocks (complex CHECKSEQUENCEVERIFY)](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/csv.js)
+- [Create (and broadcast via 3PBP) a Transaction where Alice (mediator) can send after 5 blocks (complex CHECKSEQUENCEVERIFY)](https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/csv.js)
 
 If you have a use case that you feel could be listed here, please [ask for it](https://github.com/bitcoinjs/bitcoinjs-lib/issues/new)!
 

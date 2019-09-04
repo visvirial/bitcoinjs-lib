@@ -10,12 +10,14 @@ import * as script from './script';
 export { ECPair, address, bip32, classify, crypto, networks, payments, script };
 
 export { Block } from './block';
+export { Psbt } from './psbt';
 export { OPS as opcodes } from './script';
 export { Transaction } from './transaction';
 export { TransactionBuilder } from './transaction_builder';
 
 export { BIP32Interface } from 'bip32';
+export { ECPairInterface, Signer, SignerAsync } from './ecpair';
 export { Network } from './networks';
-export { Payment, PaymentOpts } from './payments';
+export { Payment, PaymentOpts, Stack, StackElement } from './payments';
 export { OpCode } from './script';
 export { Input as TxInput, Output as TxOutput } from './transaction';

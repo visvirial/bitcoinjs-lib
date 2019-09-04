@@ -19,26 +19,40 @@ interface ECPairOptions {
   rng?(arg0: number): Buffer;
 }
 
-export interface ECPairInterface {
+export interface Signer {
+  publicKey: Buffer;
+  network?: any;
+  sign(hash: Buffer, lowR?: boolean): Buffer;
+  getPublicKey?(): Buffer;
+}
+
+export interface SignerAsync {
+  publicKey: Buffer;
+  network?: any;
+  sign(hash: Buffer, lowR?: boolean): Promise<Buffer>;
+  getPublicKey?(): Buffer;
+}
+
+export interface ECPairInterface extends Signer {
   compressed: boolean;
   network: Network;
+  lowR: boolean;
   privateKey?: Buffer;
-  publicKey?: Buffer;
   toWIF(): string;
-  sign(hash: Buffer): Buffer;
   verify(hash: Buffer, signature: Buffer): boolean;
-  getPublicKey?(): Buffer;
 }
 
 class ECPair implements ECPairInterface {
   compressed: boolean;
   network: Network;
+  lowR: boolean;
 
   constructor(
     private __D?: Buffer,
     private __Q?: Buffer,
     options?: ECPairOptions,
   ) {
+    this.lowR = false;
     if (options === undefined) options = {};
     this.compressed =
       options.compressed === undefined ? true : options.compressed;
@@ -51,8 +65,9 @@ class ECPair implements ECPairInterface {
     return this.__D;
   }
 
-  get publicKey(): Buffer | undefined {
-    if (!this.__Q) this.__Q = ecc.pointFromScalar(this.__D, this.compressed);
+  get publicKey(): Buffer {
+    if (!this.__Q)
+      this.__Q = ecc.pointFromScalar(this.__D, this.compressed) as Buffer;
     return this.__Q;
   }
 
@@ -61,9 +76,24 @@ class ECPair implements ECPairInterface {
     return wif.encode(this.network.wif, this.__D, this.compressed);
   }
 
-  sign(hash: Buffer): Buffer {
+  sign(hash: Buffer, lowR?: boolean): Buffer {
     if (!this.__D) throw new Error('Missing private key');
-    return ecc.sign(hash, this.__D);
+    if (lowR === undefined) lowR = this.lowR;
+    if (lowR === false) {
+      return ecc.sign(hash, this.__D);
+    } else {
+      let sig = ecc.sign(hash, this.__D);
+      const extraData = Buffer.alloc(32, 0);
+      let counter = 0;
+      // if first try is lowR, skip the loop
+      // for second try and on, add extra entropy counting up
+      while (sig[0] > 0x7f) {
+        counter++;
+        extraData.writeUIntLE(counter, 0, 6);
+        sig = ecc.signWithEntropy(hash, this.__D, extraData);
+      }
+      return sig;
+    }
   }
 
   verify(hash: Buffer, signature: Buffer): boolean {
@@ -77,13 +107,13 @@ function fromPrivateKey(buffer: Buffer, options?: ECPairOptions): ECPair {
     throw new TypeError('Private key not in range [1, n)');
   typeforce(isOptions, options);
 
-  return new ECPair(buffer, undefined, options as ECPairOptions);
+  return new ECPair(buffer, undefined, options);
 }
 
 function fromPublicKey(buffer: Buffer, options?: ECPairOptions): ECPair {
   typeforce(ecc.isPoint, buffer);
   typeforce(isOptions, options);
-  return new ECPair(undefined, buffer, options as ECPairOptions);
+  return new ECPair(undefined, buffer, options);
 }
 
 function fromWIF(wifString: string, network?: Network | Network[]): ECPair {
